@@ -1868,6 +1868,7 @@
             Margin <span class="gtag" id="lv-gt-defMargin">global</span>
             <div class="pmseg flabel-end">
               <button class="pmseg-btn" data-pf="margin" data-mode="pct" onclick="lvSetMarginMode('pct')">%</button>
+              <button class="pmseg-btn" data-pf="margin" data-mode="markup" onclick="lvSetMarginMode('markup')">×</button>
               <button class="pmseg-btn" data-pf="margin" data-mode="rp" onclick="lvSetMarginMode('rp')">Rp</button>
             </div>
           </div>
@@ -2133,7 +2134,9 @@
     const st = getActiveStore();
     const rounding = st ? st.rounding : 100;
     const cogs = r.purchase || 0;
-    const targetPrice   = r.marginMode === "rp" ? cogs + (r.marginRp||0) : cogs / (1 - r.margin);
+    const targetPrice   = r.marginMode === "rp"     ? cogs + (r.marginRp||0)
+                        : r.marginMode === "markup" ? cogs * (1 + (r.margin||0))
+                        : cogs / (1 - r.margin);
     const promoPrice    = targetPrice / (1 - r.discount - r.voucher);
     const feeTotal      = (r.layanan||0) + (r.preOrder||0) + (r.ongkirXtra||0) + (r.promoXtra||0);
     const mktplacePrice = promoPrice / (1 - feeTotal) + (r.trxFee||0) + (r.ongkir||0);
@@ -2411,7 +2414,7 @@
       <td class="col-margin">
         <div class="op-cell">
           <input class="cell-input" type="number" data-f="${r.marginMode==='rp'?'marginRp':'margin'}" data-i="${i}" ${r.marginMode!=='rp'?'data-pct="1"':''} value="${r.marginMode==='rp'?(r.marginRp||0):pv(r.margin)}" step="${r.marginMode==='rp'?'500':'0.5'}" min="0" placeholder="0" />
-          <button type="button" class="op-mode ${r.marginMode==='rp'?'rp':''}" data-act="toggle-margin" data-i="${i}">${r.marginMode==='rp'?'Rp':'%'}</button>
+          <button type="button" class="op-mode ${r.marginMode!=='pct'?'rp':''}" data-act="toggle-margin" data-i="${i}">${r.marginMode==='rp'?'Rp':r.marginMode==='markup'?'×':'%'}</button>
         </div>
       </td>
       <td class="col-hjt" data-out="targetPrice">${rp(c.targetPrice)}</td>
@@ -2508,7 +2511,8 @@
       const sh = getActiveSheet(); if (!sh) return;
       const row = sh.rows[+t.dataset.i]; if (!row) return;
       pushHistory();
-      row.marginMode = row.marginMode === "rp" ? "pct" : "rp";
+      const _mm = ['pct','markup','rp'];
+      row.marginMode = _mm[(_mm.indexOf(row.marginMode||'pct')+1)%3];
       renderTable(); persist();
     }
   });
@@ -2658,7 +2662,7 @@
         if ((g.defMarginMode || "pct") === "rp") {
           r.marginMode = "rp"; r.marginRp = parseFloat(g.defMargin) || 0;
         } else {
-          r.marginMode = "pct"; r.margin = getDefaultMargin();
+          r.marginMode = g.defMarginMode || "pct"; r.margin = getDefaultMargin();
         }
       }
       if (active.gDiscount  !== false) r.discount   = getVal("global-discount") / 100;
@@ -2779,6 +2783,7 @@
       const marginModeHtml = def.hasMode ? `
         <div class="mode-seg" id="chip-mseg-${def.key}" style="margin-left:auto" onclick="event.stopPropagation()">
           <button class="mode-seg-btn${(g[mKey]||'pct')==='pct'?' active':''}" data-mode="pct" onclick="setChipMode('${def.key}','pct')">%</button>
+          <button class="mode-seg-btn${(g[mKey]||'pct')==='markup'?' active':''}" data-mode="markup" onclick="setChipMode('${def.key}','markup')">×</button>
           <button class="mode-seg-btn${(g[mKey]||'pct')==='rp'?' active':''}" data-mode="rp" onclick="setChipMode('${def.key}','rp')">Rp</button>
         </div>` : "";
 
@@ -3442,7 +3447,7 @@
     return {
       name: r.name||"", sku: r.sku||"", varian: r.varian||"", purchase: r.purchase||0, hargaJual: r.hargaJual||0,
       margin: r.margin||0.10, marginRp: r.marginRp||0,
-      marginMode: r.marginMode==="rp" ? "rp" : "pct",
+      marginMode: r.marginMode==="rp" ? "rp" : r.marginMode==="markup" ? "markup" : "pct",
       discount: r.discount||0, voucher: r.voucher||0,
       layanan: r.layanan||0, preOrder: r.preOrder||0,
       ongkirXtra: r.ongkirXtra||0, promoXtra: r.promoXtra||0,
@@ -3959,7 +3964,7 @@
     document.getElementById('lv-f-margin').value = _lvMarginMode === 'rp'
       ? (r.marginRp || 0)
       : +(((r.margin || 0) * 100).toFixed(2));
-    document.getElementById('lv-margin-sfx').textContent = _lvMarginMode === 'pct' ? '%' : '';
+    document.getElementById('lv-margin-sfx').textContent = _lvMarginMode === 'rp' ? '' : '%';
     lvSetPmseg('margin', _lvMarginMode);
 
     document.getElementById('lv-f-hjt').value = lvFmt(c.targetPrice);
@@ -4001,18 +4006,29 @@
 
   window.lvSetMarginMode = function(mode) {
     if (!getActiveSheet() || _lvActiveIdx === null) return;
+    if (mode === _lvMarginMode) return;
     const sh = getActiveSheet();
     const r  = sh.rows[_lvActiveIdx]; if (!r) return;
     const curV = parseFloat(document.getElementById('lv-f-margin').value) || 0;
-    const c = compute(r);
-    if (mode === 'rp' && _lvMarginMode !== 'rp') {
-      const mPct = curV / 100;
-      r.marginRp = mPct < 1 ? Math.round(c.cogs * mPct / (1 - mPct) / 100) * 100 : 0;
-      r.margin   = mPct;
-    } else if (mode === 'pct' && _lvMarginMode !== 'pct') {
-      const hjt = c.cogs + curV;
-      r.margin   = hjt > 0 ? +(curV / hjt * 100).toFixed(1) / 100 : 0;
-      r.marginRp = curV;
+    const hpp  = r.purchase || 0;
+    // Convert current input to gross-margin fraction (common intermediate)
+    let gm;
+    if (_lvMarginMode === 'pct') {
+      gm = curV / 100;
+    } else if (_lvMarginMode === 'markup') {
+      const mu = curV / 100;
+      gm = mu / (1 + mu);
+    } else { // rp
+      const hjt = hpp + curV;
+      gm = hjt > 0 ? curV / hjt : 0;
+    }
+    // Convert to target mode
+    if (mode === 'pct') {
+      r.margin = gm; r.marginRp = 0;
+    } else if (mode === 'markup') {
+      r.margin = gm < 1 ? gm / (1 - gm) : 0; r.marginRp = 0;
+    } else { // rp
+      r.marginRp = Math.round(gm < 1 ? hpp * gm / (1 - gm) : 0); r.margin = gm;
     }
     r.marginMode = mode;
     _lvMarginMode = mode;
@@ -4034,6 +4050,7 @@
     document.getElementById('lv-f-hpp').value = 'Rp ' + Math.round(hpp).toLocaleString('id-ID');
     let hjt;
     if (_lvMarginMode === 'pct') { const mp = mg/100; hjt = mp < 1 ? hpp/(1-mp) : hpp; }
+    else if (_lvMarginMode === 'markup') { hjt = hpp * (1 + mg/100); }
     else { hjt = hpp + mg; }
     document.getElementById('lv-f-hjt').value = 'Rp ' + Math.round(hjt).toLocaleString('id-ID');
   };
@@ -4230,7 +4247,7 @@
     r.roas       = parseFloat(g.defRoas)   || 10;
     const mM     = g.defMarginMode || 'pct';
     if (mM === 'rp') { r.marginMode = 'rp'; r.marginRp = parseFloat(g.defMargin) || 0; }
-    else { r.marginMode = 'pct'; r.margin = (parseFloat(g.defMargin) || 10) / 100; }
+    else { r.marginMode = mM; r.margin = (parseFloat(g.defMargin) || 10) / 100; }
     r.discount   = (parseFloat(g.gDiscount)  || 0) / 100;
     r.voucher    = (parseFloat(g.gVoucher)   || 0) / 100;
     r.layanan    = (parseFloat(g.gLayanan)   || 0) / 100;
