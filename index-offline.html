@@ -367,7 +367,10 @@
     padding: 10px 20px;
     border-bottom: 1px solid var(--line);
     background: var(--bg-1);
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .toolbar::-webkit-scrollbar { display: none; }
   .search {
     flex: 0 1 280px;
     position: relative;
@@ -1301,10 +1304,10 @@
 
   /* List table */
   .table-wrap-list {
-    flex:1; overflow-y:auto; overflow-x:hidden;
+    flex:1; overflow-y:auto; overflow-x:auto;
     scrollbar-width:thin; scrollbar-color:var(--bg-3) transparent;
   }
-  .table-wrap-list::-webkit-scrollbar{width:4px}
+  .table-wrap-list::-webkit-scrollbar{width:4px;height:4px}
   .table-wrap-list::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:2px}
   .table-wrap-list table {
     width:100%; border-collapse:collapse;
