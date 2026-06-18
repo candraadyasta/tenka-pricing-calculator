@@ -2782,9 +2782,9 @@
       const mKey = def.modeKey || "defMarginMode";
       const marginModeHtml = def.hasMode ? `
         <div class="mode-seg" id="chip-mseg-${def.key}" style="margin-left:auto" onclick="event.stopPropagation()">
-          <button class="mode-seg-btn${(g[mKey]||'pct')==='pct'?' active':''}" data-mode="pct" onclick="setChipMode('${def.key}','pct')">%</button>
-          <button class="mode-seg-btn${(g[mKey]||'pct')==='markup'?' active':''}" data-mode="markup" onclick="setChipMode('${def.key}','markup')">×</button>
-          <button class="mode-seg-btn${(g[mKey]||'pct')==='rp'?' active':''}" data-mode="rp" onclick="setChipMode('${def.key}','rp')">Rp</button>
+          <button class="mode-seg-btn${(g[mKey]||'pct')==='pct'?' active':''}" data-mode="pct" onclick="event.stopPropagation();setChipMode('${def.key}','pct')">%</button>
+          <button class="mode-seg-btn${(g[mKey]||'pct')==='markup'?' active':''}" data-mode="markup" onclick="event.stopPropagation();setChipMode('${def.key}','markup')">×</button>
+          <button class="mode-seg-btn${(g[mKey]||'pct')==='rp'?' active':''}" data-mode="rp" onclick="event.stopPropagation();setChipMode('${def.key}','rp')">Rp</button>
         </div>` : "";
 
       popup.innerHTML = `
@@ -2871,8 +2871,21 @@
     const st = getActiveStore(); if (!st) return;
     const def = CHIP_DEFS.find(d => d.key === chipKey);
     if (!def || !def.modeKey) return;
+    if ((st.globals[def.modeKey] || 'pct') === mode) return;
     st.globals[def.modeKey] = mode;
-    buildChips(); persist();
+    // Update mode buttons in-place — avoids buildChips() which would destroy the popup
+    const mseg = document.getElementById(`chip-mseg-${chipKey}`);
+    if (mseg) {
+      mseg.querySelectorAll('.mode-seg-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.mode === mode));
+    }
+    // Update chip badge (only changes visually on rp ↔ non-rp switch)
+    const chip = document.querySelector(`.param-chip[data-key="${chipKey}"]`);
+    if (chip) {
+      const valEl = chip.querySelector('.chip-val');
+      if (valEl) valEl.textContent = getChipDisplayVal(chipKey, st.globals);
+    }
+    persist();
   }
   window.setChipMode = setChipMode;
   // Backward compat
@@ -2880,6 +2893,7 @@
 
   // Close chip popups on outside click
   document.addEventListener("click", (e) => {
+    if (!document.contains(e.target)) return; // target detached mid-click (e.g. DOM rebuild)
     if (!e.target.closest(".param-chip") && !e.target.closest(".chip-popup")) {
       closeAllChipPopups();
     }
