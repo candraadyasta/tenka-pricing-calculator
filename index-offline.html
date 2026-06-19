@@ -1310,7 +1310,7 @@
   .table-wrap-list::-webkit-scrollbar{width:4px;height:4px}
   .table-wrap-list::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:2px}
   .table-wrap-list table {
-    min-width:1060px; border-collapse:collapse;
+    min-width:1060px; width:100%; border-collapse:collapse;
     font-size:12px;
   }
   .table-wrap-list th {
@@ -2145,10 +2145,8 @@
     const mktplacePrice = promoPrice / (1 - feeTotal) + (r.trxFee||0) + (r.ongkir||0);
     const mktPct        = roasToMktPct(r.roas);
     const setPrice      = ceilTo(mktplacePrice / (1 - mktPct), rounding);
-    const net           = mktplacePrice - (r.trxFee||0) - (r.ongkir||0);
-    const afterFees     = net - net * feeTotal;
-    const saleRevenue   = afterFees - promoPrice * ((r.actDiscount||0) + (r.actVoucher||0));
-    const buyerPrice    = setPrice * (1 - (r.actDiscount||0)) * (1 - (r.actVoucher||0));
+    const buyerPrice    = setPrice * (1 - (r.actDiscount||0) - (r.actVoucher||0));
+    const saleRevenue   = buyerPrice - setPrice * feeTotal - (r.trxFee||0) - (r.ongkir||0);
     const diff          = saleRevenue - targetPrice;
     const status        = diff > 0.5 ? "BLUE" : diff >= -0.5 ? "GREEN" : "RED";
     return { cogs, targetPrice, promoPrice, mktplacePrice, mktPct, setPrice, saleRevenue, buyerPrice, status };
