@@ -220,7 +220,7 @@ window.SHOPEE_FEES = [
 
   // Kesehatan
   { c:"Kesehatan", s:"Obat-obatan & Alat Kesehatan", adm:9.5, mall:7.2, ox:"E", k:["obat","obat warung","p3k","plester","perban","termometer","tensimeter","alat tes gula darah","kursi roda","masker medis","sarung tangan medis"] },
-  { c:"Kesehatan", s:"Suplemen Makanan", adm:9.0, mall:7.2, ox:"E", k:["vitamin","suplemen","multivitamin","kolagen","suplemen diet","madu"] },
+  { c:"Kesehatan", s:"Suplemen Makanan", adm:9.0, mall:7.2, ox:"E", k:["vitamin","suplemen","multivitamin","kolagen","suplemen diet"] },
   { c:"Kesehatan", s:"Perawatan Diri", adm:9.0, mall:7.2, ox:"E", k:["sikat gigi","pasta gigi","obat kumur","pembalut","anti nyamuk","perawatan gigi"] },
   { c:"Kesehatan", s:"Kesehatan Seksual", adm:9.0, mall:7.7, ox:"D", k:["kondom","pelumas","alat bantu"] },
   { c:"Kesehatan", s:"Lensa Kontak", adm:9.0, mall:8.0, ox:"H", k:["softlens","lensa kontak","contact lens","cairan softlens"] },
@@ -235,7 +235,7 @@ window.SHOPEE_FEES = [
   { c:"Makanan & Minuman", s:"Susu & Olahan", adm:8.25, mall:9.95, ox:"E", k:["susu","susu uht","susu bubuk","keju","yogurt","mentega","margarin","krimer","es krim"] },
   { c:"Makanan & Minuman", s:"Telur", adm:6.5, mall:7.2, ox:"E", k:["telur","telur ayam","telur bebek"] },
   { c:"Makanan & Minuman", s:"Roti & Kue", adm:9.0, mall:10.2, ox:"E", k:["roti","kue","pastry","pie","bakery"] },
-  { c:"Makanan & Minuman", s:"Menu Sarapan", adm:8.25, mall:10.2, ox:"E", k:["madu","selai","sereal","granola","oat"] },
+  { c:"Makanan & Minuman", s:"Menu Sarapan", adm:6.75, mall:10.2, ox:"E", k:["madu","selai","sereal","granola","oat","madu akasia","madu randu","madu multiflora","madu hutan"] },
   { c:"Makanan & Minuman", s:"Makanan Segar & Beku", adm:6.75, mall:9.95, ox:"E", k:["daging","ayam","ikan","udang","sayur","buah","frozen food","makanan beku","seafood"] },
 
   // Perawatan & Kecantikan (OX D)
