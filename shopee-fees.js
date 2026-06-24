@@ -74,7 +74,7 @@ window.SHOPEE_FEES = [
   // Elektronik (rumah tangga & listrik)
   { c:"Elektronik", s:"Kelistrikan", adm:10.0, mall:10.2, ox:"F", k:["stop kontak","kabel listrik","saklar","bel","alarm","anti petir","penghemat listrik","terminal listrik"] },
   { c:"Elektronik", s:"Baterai", adm:9.5, mall:7.7, ox:"D", k:["baterai","battery","aa","aaa","baterai abc"] },
-  { c:"Elektronik", s:"Perangkat Dapur (Elektronik)", adm:6.5, mall:7.2, ox:"D", k:["dispenser","kompor","kompor listrik","blender","mixer","air fryer","microwave","oven","penanak nasi","rice cooker","magic com","juicer","mesin kopi","kulkas","freezer","kompor gas","food processor","slow cooker"] },
+  { c:"Elektronik", s:"Perangkat Dapur (Elektronik)", adm:6.5, mall:7.2, ox:"D", k:["dispenser","kompor","kompor listrik","blender","mixer","air fryer","microwave","oven","penanak nasi","rice cooker","magic com","juicer","mesin kopi","kulkas","freezer","kompor gas","food processor","slow cooker","panci presto","presto","pressure cooker","panci elektrik","panci listrik","rice steamer","pembuat roti","bread maker","pemanggang roti","air fryer oven","deep fryer","panci masak"] },
   { c:"Elektronik", s:"Peralatan Listrik Besar (AC, Mesin Cuci)", adm:6.5, mall:7.2, ox:"D", k:["ac","air conditioner","mesin cuci","pengering pakaian","kipas angin","pendingin ruangan"] },
   { c:"Elektronik", s:"Peralatan Listrik Besar (Water Heater)", adm:9.5, mall:7.2, ox:"D", k:["water heater","pemanas air","penghangat ruangan","pengering sepatu"] },
   { c:"Elektronik", s:"Peralatan Listrik Kecil", adm:6.5, mall:7.2, ox:"D", k:["setrika","mesin uap","purifier","air purifier","dehumidifier","penyedot debu","vacuum","mesin jahit","telepon"] },
