@@ -1560,8 +1560,11 @@
   .pcard-del:hover { background:var(--accent-warn); color:#fff; }
 
   /* Per-card fee fields */
-  .pcard-fees { display:flex; gap:5px; padding:6px 0 2px; border-top:1px solid rgba(255,255,255,.08); }
+  .pcard-fees { display:flex; flex-direction:column; gap:4px; padding:6px 0 2px; border-top:1px solid rgba(255,255,255,.08); }
+  .pcard-fees-row { display:flex; gap:5px; }
   .pcf { display:flex; flex-direction:column; gap:3px; flex:1; min-width:0; }
+  .vchr-mode-btn { display:inline-block; font-size:8px; font-weight:700; padding:1px 5px; border-radius:3px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.65); cursor:pointer; margin-left:3px; vertical-align:middle; line-height:1.4; transition:background .15s; }
+  .vchr-mode-btn:hover { background:rgba(255,255,255,.22); color:#fff; }
   .pcf > label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:rgba(255,255,255,.38); padding-left:1px; }
   .pcf-iw { position:relative; }
   .pcf-inp { width:100%; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:5px; color:#fff; font-size:11px; font-family:var(--font-mono); padding:4px 14px 4px 5px; -moz-appearance:textfield; }
@@ -4420,7 +4423,9 @@
     const trxV     = fv('trx','gTrx');
     const diskonRp     = R(hj * diskon  / 100);
     const omzet        = hj - diskonRp;
-    const voucherTokoRp= +card.voucherToko || 0;
+    const voucherMode  = card.voucherMode || 'rp';
+    const voucherVal   = +card.voucherToko || 0;
+    const voucherTokoRp= voucherMode === 'pct' ? Math.round(omzet * voucherVal / 100) : voucherVal;
     const basis        = omzet - voucherTokoRp;
     const layananRp    = R(basis * layanan / 100);
     const ongkirRp     = R(basis * ongkir  / 100);
@@ -4451,12 +4456,16 @@
           '<input class="pcard-sku" data-ci="'+i+'" data-cf="sku" value="'+esc(card.sku||'')+'" placeholder="SKU" />'+
         '</div>'+
         '<div class="pcard-fees">'+
-          '<div class="pcf"><label>Diskon</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="diskon" value="'+c.diskon+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
-          '<div class="pcf"><label>Layanan</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="layanan" value="'+c.layanan+'" step="0.05" min="0" /><span class="psfx">%</span></div></div>'+
-          '<div class="pcf"><label>Ongkir</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="ongkir" value="'+c.ongkir+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
-          '<div class="pcf"><label>Promo</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="promo" value="'+c.promo+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
-          '<div class="pcf"><label>Trx (Rp)</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="trx" value="'+c.trx+'" step="50" min="0" /></div></div>'+
-          '<div class="pcf"><label>Vchr Toko (Rp)</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="voucherToko" value="'+c.voucherTokoRp+'" step="1000" min="0" /></div></div>'+
+          '<div class="pcard-fees-row">'+
+            '<div class="pcf"><label>Diskon</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="diskon" value="'+c.diskon+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
+            '<div class="pcf"><label>Layanan</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="layanan" value="'+c.layanan+'" step="0.05" min="0" /><span class="psfx">%</span></div></div>'+
+            '<div class="pcf"><label>Ongkir</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="ongkir" value="'+c.ongkir+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
+            '<div class="pcf"><label>Promo</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="promo" value="'+c.promo+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
+          '</div>'+
+          '<div class="pcard-fees-row">'+
+            '<div class="pcf"><label>Trx (Rp)</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="trx" value="'+c.trx+'" step="50" min="0" /></div></div>'+
+            '<div class="pcf"><label>Vchr Toko <button class="vchr-mode-btn" data-ci="'+i+'" title="Ganti mode Rp / %">'+(card.voucherMode==='pct'?'%':'Rp')+'</button></label><div class="pcf-iw"><input class="pcf-inp '+(card.voucherMode==='pct'?'':'pcf-rp')+'" type="number" data-ci="'+i+'" data-ccf="voucherToko" value="'+(+card.voucherToko||0)+'" step="'+(card.voucherMode==='pct'?'0.5':'1000')+'" min="0" />'+(card.voucherMode==='pct'?'<span class="psfx">%</span>':'')+' </div></div>'+
+          '</div>'+
         '</div>'+
       '</div>'+
       '<div class="pcard-sell">'+
@@ -4585,6 +4594,13 @@
   });
   document.addEventListener('click', function(e){
     if(!e.target.closest) return;
+    const vchrBtn=e.target.closest('.vchr-mode-btn');
+    if(vchrBtn){
+      const i=+vchrBtn.dataset.ci; const st=getActiveStore(); if(!st) return; ensureCards(st);
+      const card=st.cards[i]; if(!card) return;
+      card.voucherMode=(card.voucherMode==='pct')?'rp':'pct'; card.voucherToko=0;
+      persist(); renderCards(); return;
+    }
     const add=e.target.closest('[data-cadd]');
     if(add){ addCardToList(+add.dataset.cadd); return; }
     const clr=e.target.closest('[data-cclear]');
