@@ -4418,19 +4418,21 @@
     const ongkir   = fv('ongkir','gOngkir');
     const promo    = fv('promo','gPromo');
     const trxV     = fv('trx','gTrx');
-    const diskonRp = R(hj * diskon  / 100);
-    const omzet    = hj - diskonRp;
-    const layananRp= R(hj * layanan / 100);
-    const ongkirRp = R(hj * ongkir  / 100);
-    const promoRp  = R(hj * promo   / 100);
-    const trx      = R(trxV);
-    const admin    = layananRp + ongkirRp + promoRp + trx;
-    const diterima = omzet - admin;
-    const hpp      = +card.hpp || 0;
-    const profit   = diterima - hpp;
-    const margin   = hj > 0 ? profit / hj : 0;
-    const status   = profit > 0.5 ? 'BLUE' : profit >= -0.5 ? 'GREEN' : 'RED';
-    return { hj, diskon, layanan, ongkir, promo, diskonRp, omzet, layananRp, ongkirRp, promoRp, trx, admin, diterima, hpp, profit, margin, status };
+    const diskonRp     = R(hj * diskon  / 100);
+    const omzet        = hj - diskonRp;
+    const voucherTokoRp= +card.voucherToko || 0;
+    const basis        = omzet - voucherTokoRp;
+    const layananRp    = R(basis * layanan / 100);
+    const ongkirRp     = R(basis * ongkir  / 100);
+    const promoRp      = R(basis * promo   / 100);
+    const trx          = R(trxV);
+    const admin        = layananRp + ongkirRp + promoRp + trx;
+    const diterima     = omzet - voucherTokoRp - admin;
+    const hpp          = +card.hpp || 0;
+    const profit       = diterima - hpp;
+    const margin       = hj > 0 ? profit / hj : 0;
+    const status       = profit > 0.5 ? 'BLUE' : profit >= -0.5 ? 'GREEN' : 'RED';
+    return { hj, diskon, layanan, ongkir, promo, diskonRp, omzet, voucherTokoRp, layananRp, ongkirRp, promoRp, trx, admin, diterima, hpp, profit, margin, status };
   }
 
   function cardHTML(card, i){
@@ -4454,6 +4456,7 @@
           '<div class="pcf"><label>Ongkir</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="ongkir" value="'+c.ongkir+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
           '<div class="pcf"><label>Promo</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="promo" value="'+c.promo+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
           '<div class="pcf"><label>Trx (Rp)</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="trx" value="'+c.trx+'" step="50" min="0" /></div></div>'+
+          '<div class="pcf"><label>Vchr Toko (Rp)</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="voucherToko" value="'+c.voucherTokoRp+'" step="1000" min="0" /></div></div>'+
         '</div>'+
       '</div>'+
       '<div class="pcard-sell">'+
@@ -4464,6 +4467,7 @@
         '<div class="pc-sec">Diskon Produk</div>'+
         '<div class="pc-row"><span class="pl" data-out="diskonLbl">Diskon '+_feeFmt(c.diskon)+'</span><span class="pv neg" data-out="diskonRp">– '+rp(c.diskonRp)+'</span></div>'+
         '<div class="pc-row total"><span class="pl">= Omzet</span><span class="pv" data-out="omzet">'+rp(c.omzet)+'</span></div>'+
+        '<div class="pc-row" data-out-row="voucherToko" style="'+(c.voucherTokoRp?'':'display:none')+'"><span class="pl">Voucher Toko</span><span class="pv neg" data-out="voucherTokoRp">– '+rp(c.voucherTokoRp)+'</span></div>'+
         '<div class="pc-sec">Biaya Admin Shopee</div>'+
         '<div class="pc-row"><span class="pl" data-out="layananLbl">Layanan '+_feeFmt(c.layanan)+'</span><span class="pv neg" data-out="layananRp">– '+rp(c.layananRp)+'</span></div>'+
         '<div class="pc-row"><span class="pl" data-out="ongkirLbl">Ongkir Xtra '+_feeFmt(c.ongkir)+'</span><span class="pv neg" data-out="ongkirRp">– '+rp(c.ongkirRp)+'</span></div>'+
@@ -4500,6 +4504,9 @@
     set('ongkirLbl','Ongkir Xtra '+_feeFmt(c.ongkir));
     set('promoLbl','Promo Xtra '+_feeFmt(c.promo));
     set('diskonRp','– '+rp(c.diskonRp)); set('omzet',rp(c.omzet));
+    set('voucherTokoRp','– '+rp(c.voucherTokoRp));
+    const vchrRow=el.querySelector('[data-out-row="voucherToko"]');
+    if(vchrRow) vchrRow.style.display = c.voucherTokoRp ? '' : 'none';
     set('layananRp','– '+rp(c.layananRp)); set('ongkirRp','– '+rp(c.ongkirRp));
     set('promoRp','– '+rp(c.promoRp)); set('trx','– '+rp(c.trx));
     set('diterima',rp(c.diterima));
