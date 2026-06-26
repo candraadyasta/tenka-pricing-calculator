@@ -1911,7 +1911,7 @@
     <div class="fgroup">
       <div class="gtitle">Marketing</div>
       <div class="frow">
-        <div class="field"><div class="flabel">ROAS <span class="gtag" id="lv-gt-defRoas">global</span></div><input class="finput" id="lv-f-roas" type="number" step="0.5" min="0.1" oninput="lvPanelChange()"/></div>
+        <div class="field"><div class="flabel">ROAS <span class="gtag" id="lv-gt-defRoas">global</span></div><input class="finput" id="lv-f-roas" type="number" step="0.5" min="0" oninput="lvPanelChange()"/></div>
         <div class="field"><div class="flabel">Marketing % (otomatis)</div><input class="finput computed" id="lv-f-mkt" readonly/></div>
       </div>
     </div>
@@ -4010,7 +4010,7 @@
     document.getElementById('lv-f-px').value     = +((r.promoXtra  || 0) * 100).toFixed(2);
     document.getElementById('lv-f-trx').value    = r.trxFee || 0;
     document.getElementById('lv-f-ongkir').value = r.ongkir  || 0;
-    document.getElementById('lv-f-roas').value   = r.roas    || 10;
+    document.getElementById('lv-f-roas').value   = r.roas != null ? r.roas : 10;
     document.getElementById('lv-f-mkt').value    = (c.mktPct * 100).toFixed(1) + '%';
 
     // gtags
@@ -4196,7 +4196,7 @@
     r.promoXtra   = fv('lv-f-px')   / 100;
     r.trxFee      = fv('lv-f-trx');
     r.ongkir      = fv('lv-f-ongkir');
-    r.roas        = fv('lv-f-roas') || 10;
+    r.roas        = document.getElementById('lv-f-roas').value.trim() === '' ? 10 : fv('lv-f-roas');
     r.actDiscount = fv('lv-f-adisc') / 100;
     r.actVoucher  = fv('lv-f-avchr') / 100;
     lvOpenPanel(_lvActiveIdx);
@@ -4245,7 +4245,7 @@
     r.promoXtra  = fv('lv-f-px')   / 100;
     r.trxFee     = fv('lv-f-trx');
     r.ongkir     = fv('lv-f-ongkir');
-    r.roas       = fv('lv-f-roas') || 10;
+    r.roas       = document.getElementById('lv-f-roas').value.trim() === '' ? 10 : fv('lv-f-roas');
     r.actDiscount = fv('lv-f-adisc') / 100;
     r.actVoucher  = fv('lv-f-avchr') / 100;
     const c = compute(r);
