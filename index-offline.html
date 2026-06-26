@@ -2143,15 +2143,29 @@
     const targetPrice   = r.marginMode === "rp"     ? cogs + (r.marginRp||0)
                         : r.marginMode === "markup" ? cogs * (1 + (r.margin||0))
                         : cogs / (1 - r.margin);
-    const promoPrice    = targetPrice / (1 - r.discount - r.voucher);
     const feeTotal      = (r.layanan||0) + (r.preOrder||0) + (r.ongkirXtra||0) + (r.promoXtra||0);
-    const mktplacePrice = promoPrice / (1 - feeTotal) + (r.trxFee||0) + (r.ongkir||0);
+    const trxFee        = r.trxFee || 0;
+    const ongkir        = r.ongkir || 0;
+    const d             = r.discount || 0;
+    const v             = r.voucher  || 0;
+    // Reverse from Shopee formula:
+    //   diterima = basis × (1−feeTotal) − trxFee − ongkir = targetPrice
+    //   basis    = omzet × (1−v),  omzet = setPrice × (1−d)
+    //   → setPrice = (targetPrice + trxFee + ongkir) / ((1−d)(1−v)(1−feeTotal))
+    const denom         = (1 - d) * (1 - v) * (1 - feeTotal);
+    const mktplacePrice = denom > 0 ? (targetPrice + trxFee + ongkir) / denom : 0;
     const mktPct        = roasToMktPct(r.roas);
     const setPrice      = ceilTo(mktplacePrice / (1 - mktPct), rounding);
-    const buyerPrice    = setPrice * (1 - (r.actDiscount||0) - (r.actVoucher||0));
-    const saleRevenue   = buyerPrice - setPrice * feeTotal - (r.trxFee||0) - (r.ongkir||0);
+    // Forward verification using actual (running) discounts/vouchers
+    const ad            = r.actDiscount || 0;
+    const av            = r.actVoucher  || 0;
+    const omzet         = setPrice * (1 - ad);
+    const basis         = omzet * (1 - av);              // omzet − voucherToko
+    const buyerPrice    = basis;                          // what buyer pays
+    const saleRevenue   = basis * (1 - feeTotal) - trxFee - ongkir;
     const diff          = saleRevenue - targetPrice;
     const status        = diff > 0.5 ? "BLUE" : diff >= -0.5 ? "GREEN" : "RED";
+    const promoPrice    = mktplacePrice * (1 - d);        // omzet target (internal)
     return { cogs, targetPrice, promoPrice, mktplacePrice, mktPct, setPrice, saleRevenue, buyerPrice, status };
   }
 
