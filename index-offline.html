@@ -1064,10 +1064,8 @@
   .popup-wrap { position: relative; }
   .popup {
     display: none;
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    z-index: 200;
+    position: fixed;
+    z-index: 9999;
     background: var(--bg-2);
     border: 1px solid var(--line-2);
     border-radius: var(--radius);
@@ -2927,7 +2925,19 @@
   // Sort popup
   document.getElementById("sort-btn").addEventListener("click", function (e) {
     e.stopPropagation();
-    document.getElementById("sort-popup").classList.toggle("open");
+    const popup = document.getElementById("sort-popup");
+    const isOpen = popup.classList.contains("open");
+    document.querySelectorAll(".popup.open").forEach(p => p.classList.remove("open"));
+    if (!isOpen) {
+      const rect = this.getBoundingClientRect();
+      popup.style.top  = (rect.bottom + 6) + "px";
+      popup.style.left = rect.left + "px";
+      popup.classList.add("open");
+      const pr = popup.getBoundingClientRect();
+      if (pr.right > window.innerWidth - 10) {
+        popup.style.left = (window.innerWidth - pr.width - 10) + "px";
+      }
+    }
   });
   document.querySelectorAll(".sort-item[data-col]").forEach(item => {
     item.addEventListener("click", function () {
