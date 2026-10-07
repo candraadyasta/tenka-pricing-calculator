@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kalkulator Biaya & Profit Shopee — Offline</title>
+<title>Kalkulator Biaya &amp; Profit Shopee — Offline v2</title>
 <style>
 
   /* ============ THEME TOKENS ============ */
@@ -1119,6 +1119,24 @@
     cursor: pointer; transition: all .15s; white-space: nowrap; user-select: none;
     position: relative;
   }
+  #roas-base-toggle {
+    display: inline-flex; align-items: center; gap: 4px; flex: none;
+    padding: 3px 4px 3px 9px; border-radius: 20px;
+    border: 1px solid var(--line-2); background: var(--bg-2); white-space: nowrap;
+  }
+  #roas-base-toggle .rbt-lbl {
+    font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--text-2); margin-right: 2px;
+  }
+  #roas-base-toggle .rbt-opt {
+    border: 1px solid transparent; background: transparent; color: var(--text-2);
+    font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 16px;
+    cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  #roas-base-toggle .rbt-opt:hover { color: var(--text-0); }
+  #roas-base-toggle .rbt-opt.on {
+    background: var(--accent-soft); color: var(--accent); border-color: var(--accent-ring);
+  }
   .param-chip:hover { border-color: var(--accent-ring); color: var(--text-0); }
   .param-chip.active-chip { border-color: var(--accent-ring); color: var(--accent); background: var(--accent-soft); }
   .param-chip.inactive-chip { color: var(--text-2); border-color: var(--line); }
@@ -1570,6 +1588,21 @@
   .pcf-inp:focus { outline:none; border-color:var(--accent-2); background:rgba(255,255,255,.1); }
   .pcf-iw .psfx { position:absolute; right:5px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.38); font-size:9px; pointer-events:none; }
   .pcf-inp.pcf-rp { padding-right:5px; }
+  .pcf-more { display:flex; align-items:center; gap:6px; width:100%; margin-top:6px; padding:6px 9px;
+    background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.13); border-radius:7px;
+    color:rgba(255,255,255,.58); font-size:9.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.4px; cursor:pointer; font-family:inherit; transition:all .15s; }
+  .pcf-more:hover { background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.24); color:#fff; }
+  .pcf-more:active { background:rgba(255,255,255,.13); }
+  .pcf-more-cin { font-size:9px; flex:none; width:14px; height:14px; display:flex; align-items:center;
+    justify-content:center; border-radius:4px; background:rgba(255,255,255,.09); transition:all .15s; }
+  .pcf-more[aria-expanded="true"] { background:var(--accent-soft); border-color:var(--accent-ring); color:var(--accent); }
+  .pcf-more[aria-expanded="true"] .pcf-more-cin { background:rgba(94,194,255,.22); color:var(--accent-2); }
+  .pcf-more-badge { margin-left:auto; background:rgba(94,194,255,.16); color:var(--accent-2);
+    border-radius:9px; padding:1px 6px; font-size:9px; }
+  .pcard-fees-extra { display:flex; flex-direction:column; gap:4px; padding-top:4px; }
+  .pcf-note { font-size:9px; color:rgba(255,255,255,.32); padding-left:1px; }
+  .pc-row .pl-note { font-size:9.5px; color:var(--text-2); }
 
   .pcard-sell { background:var(--accent-soft); padding:12px 16px 14px; text-align:right; border-bottom:1px solid var(--line); }
   .pcard-sell-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--text-2); }
@@ -1597,7 +1630,8 @@
   .pcard-foot { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 16px; border-top:1px solid var(--line); }
   .pcard-foot .pf-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--text-2); }
   .pcard-foot .pf-val { font-family:var(--font-mono); font-weight:800; font-size:16px; }
-  .pcard-foot .pf-tag { font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; }
+  .pcard-foot .pf-tag { font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; flex:none; }
+  .pcard-foot .pf-sub { font-size:10px; font-weight:600; color:var(--text-2); margin-top:2px; font-family:var(--font-mono); }
   .pcard.s-BLUE .pf-val { color:var(--accent-2); }   .pcard.s-BLUE .pf-tag { background:rgba(94,194,255,.14); color:var(--accent-2); }
   .pcard.s-GREEN .pf-val { color:var(--accent); }     .pcard.s-GREEN .pf-tag { background:var(--accent-soft); color:var(--accent); }
   .pcard.s-RED .pf-val { color:var(--accent-warn); }  .pcard.s-RED .pf-tag { background:rgba(255,122,122,.14); color:var(--accent-warn); }
@@ -1668,6 +1702,11 @@
     <!-- PARAMETER BAR v2 - chip based -->
     <section class="param-bar" id="param-bar">
       <div id="param-chips-container"></div>
+      <div id="roas-base-toggle" title="Basis omzet yang dipakai platform untuk menghitung ROAS">
+        <span class="rbt-lbl">Basis ROAS</span>
+        <button class="rbt-opt" data-rbase="set">Shopee · harga coret</button>
+        <button class="rbt-opt" data-rbase="buyer">TikTok · harga bayar</button>
+      </div>
     </section>
 
     <!-- TOOLBAR -->
@@ -1715,11 +1754,6 @@
       <button class="btn btn-primary" id="btn-export">Export Excel</button>
     </section>
 
-    <!-- FEE FORMULA BAR (Card view) -->
-    <section class="fee-bar" id="fee-bar">
-      <div class="fee-hint">Semua persentase dihitung dari <b>Omzet − Voucher Toko</b>. Klik <b>Biaya Admin</b> untuk mengisi biaya kategori Shopee ke tiap kartu otomatis.</div>
-    </section>
-
     <!-- CARD VIEW -->
     <div id="card-view">
       <div class="cards-grid" id="cards-grid"></div>
@@ -1749,7 +1783,7 @@
             <th class="col-sku">SKU</th>
             <th class="col-hpp">HPP</th>
             <th class="col-margin">Margin</th>
-            <th class="col-hjt">Harga Jual Target</th>
+            <th class="col-hjt" title="Uang bersih yang harus diterima setelah biaya platform dan biaya iklan">Harga Jual Target</th>
             <th class="col-discount">Discount %</th>
             <th class="col-voucher">Voucher %</th>
             <th class="col-layanan">Layanan %</th>
@@ -1764,7 +1798,7 @@
             <th class="sim-col">Act Disc %</th>
             <th class="sim-col">Act Vchr %</th>
             <th class="sim-col">Harga Pembeli</th>
-            <th class="sim-col">Sale Rev</th>
+            <th class="sim-col" title="Uang bersih setelah biaya platform DAN biaya iklan">Sale Rev</th>
             <th class="sim-col">Status</th>
           </tr>
         </thead>
@@ -1781,13 +1815,13 @@
             <th class="lv-varian" style="width:130px">Varian</th>
             <th class="lv-sku" style="width:120px;text-align:right">SKU</th>
             <th class="lv-harga" style="width:140px;text-align:right">HPP</th>
-            <th class="lv-hpp" style="width:155px;text-align:right">Harga Jual Target</th>
+            <th class="lv-hpp" style="width:155px;text-align:right" title="Uang bersih yang harus diterima setelah biaya platform dan biaya iklan">Harga Jual Target</th>
             <th class="lv-sp" style="width:120px;text-align:right">Set Price</th>
             <th class="lv-margin" style="width:120px;text-align:right">Margin %</th>
             <th class="lv-sim-col" style="width:60px;text-align:right">Act Disc %</th>
             <th class="lv-sim-col" style="width:60px;text-align:right">Act Vchr %</th>
             <th class="lv-sim-col" style="width:115px;text-align:right">Harga Pembeli</th>
-            <th class="lv-sim-col" style="width:105px;text-align:right">Sale Rev</th>
+            <th class="lv-sim-col" style="width:105px;text-align:right" title="Uang bersih setelah biaya platform DAN biaya iklan">Sale Rev</th>
             <th class="lv-sim-col" style="width:40px;text-align:center">Status</th>
             <th class="lv-act" style="width:36px"></th>
           </tr>
@@ -1902,8 +1936,24 @@
         <div class="field"><div class="flabel">Promo Xtra % <span class="gtag" id="lv-gt-gPromo">global</span></div><div class="iwrap"><input class="finput" id="lv-f-px" type="number" step="0.1" min="0" oninput="lvPanelChange()"/><span class="sfx">%</span></div></div>
       </div>
       <div class="frow">
+        <div class="field"><div class="flabel">Live Xtra % <span class="gtag" id="lv-gt-gLive">global</span></div><div class="iwrap"><input class="finput" id="lv-f-live" type="number" step="0.1" min="0" oninput="lvPanelChange()"/><span class="sfx">%</span></div></div>
+        <div class="field"><div class="flabel">Premi % <span class="gtag" id="lv-gt-gPremi">global</span></div><div class="iwrap"><input class="finput" id="lv-f-premi" type="number" step="0.1" min="0" oninput="lvPanelChange()"/><span class="sfx">%</span></div></div>
+      </div>
+      <div class="frow">
+        <div class="field"><div class="flabel">Affiliate % <span class="gtag" id="lv-gt-gAffiliate">global</span></div><div class="iwrap"><input class="finput" id="lv-f-aff" type="number" step="0.5" min="0" oninput="lvPanelChange()"/><span class="sfx">%</span></div></div>
+        <div class="field"><div class="flabel">Pembayaran % <span class="gtag" id="lv-gt-gPembayaran">global</span></div><div class="iwrap"><input class="finput" id="lv-f-bayar" type="number" step="0.1" min="0" oninput="lvPanelChange()"/><span class="sfx">%</span></div></div>
+      </div>
+      <div class="frow">
         <div class="field"><div class="flabel">TRX Fee (Rp) <span class="gtag" id="lv-gt-gTrx">global</span></div><input class="finput" id="lv-f-trx" type="number" step="50" min="0" oninput="lvPanelChange()"/></div>
         <div class="field"><div class="flabel">Ongkir (Rp) <span class="gtag" id="lv-gt-gOngkirRp">global</span></div><input class="finput" id="lv-f-ongkir" type="number" step="500" min="0" oninput="lvPanelChange()"/></div>
+      </div>
+    </div>
+    <div class="fgroup">
+      <div class="gtitle">SPayLater</div>
+      <div class="sim-note">Basis SPayLater termasuk ongkir yang dibayar pembeli — beda dari biaya lain. Isi Ongkir Pembeli 0 kalau gratis ongkir penuh.</div>
+      <div class="frow">
+        <div class="field"><div class="flabel">SPayLater % <span class="gtag" id="lv-gt-gSpl">global</span></div><div class="iwrap"><input class="finput" id="lv-f-spl" type="number" step="0.5" min="0" oninput="lvPanelChange()"/><span class="sfx">%</span></div></div>
+        <div class="field"><div class="flabel">Ongkir Pembeli (Rp) <span class="gtag" id="lv-gt-gOngkirPembeli">global</span></div><input class="finput" id="lv-f-okp" type="number" step="1000" min="0" oninput="lvPanelChange()"/></div>
       </div>
     </div>
     <div class="fgroup">
@@ -1922,7 +1972,7 @@
       </div>
       <div class="frow">
         <div class="field"><div class="flabel">Harga Pembeli</div><input class="finput sim-computed" id="lv-f-hbeli" readonly/></div>
-        <div class="field"><div class="flabel">Sale Revenue</div><input class="finput sim-computed" id="lv-f-srev" readonly/></div>
+        <div class="field"><div class="flabel">Sale Revenue <span style="opacity:.6;font-weight:500">(stlh iklan)</span></div><input class="finput sim-computed" id="lv-f-srev" readonly/></div>
       </div>
       <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
         <span style="font-size:10px;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Status</span>
@@ -1982,7 +2032,7 @@
       </div>
       <div class="sim-result-grid">
         <div class="sim-rcard"><div class="rlabel">Harga Pembeli</div><div class="rval" id="lv-sp-hbeli">—</div></div>
-        <div class="sim-rcard"><div class="rlabel">Sale Revenue</div><div class="rval" id="lv-sp-srev">—</div></div>
+        <div class="sim-rcard"><div class="rlabel">Sale Revenue (stlh iklan)</div><div class="rval" id="lv-sp-srev">—</div></div>
         <div class="sim-rcard"><div class="rlabel">Set Price</div><div class="rval" id="lv-sp-setprice">—</div></div>
         <div class="sim-rcard"><div class="rlabel">Margin Aktual</div><div class="rval" id="lv-sp-margin">—</div></div>
       </div>
@@ -2061,11 +2111,24 @@
   function defaultGlobals() {
     return { defRoas:"10", defMargin:"10", gDiscount:"10", gVoucher:"5",
              gLayanan:"10", gPreorder:"0", gOngkir:"6", gPromo:"4.5",
-             gTrx:"1250", gOngkirRp:"0",
+             gLive:"0", gPremi:"0", gAffiliate:"0", gPembayaran:"0",
+             gSpl:"0", gOngkirPembeli:"0",
+             gTrx:"1250", gOngkirRp:"0", roasBase:"set",
              defMarginMode:"pct", chipActive:{ defRoas:true, defMargin:true, gDiscount:true, gVoucher:true,
                           gLayanan:true, gPreorder:false, gOngkir:true, gPromo:true,
+                          gLive:false, gPremi:false, gAffiliate:false, gPembayaran:false,
+                          gSpl:false, gOngkirPembeli:false,
                           gTrx:true, gOngkirRp:false } };
   }
+  // Biaya persen tambahan yang basisnya SAMA dengan Biaya Layanan
+  // (harga setelah diskon + voucher penjual, tanpa ongkir).
+  // SPayLater sengaja TIDAK di sini — basisnya termasuk ongkir pembeli.
+  const EXTRA_FEES = [
+    { row:"live",       glob:"gLive",       valId:"global-live",       label:"Live XTRA"  },
+    { row:"premi",      glob:"gPremi",      valId:"global-premi",      label:"Premi"      },
+    { row:"affiliate",  glob:"gAffiliate",  valId:"global-affiliate",  label:"Affiliate"  },
+    { row:"pembayaran", glob:"gPembayaran", valId:"global-pembayaran", label:"Pembayaran" },
+  ];
   function makeSheet(name) {
     return { id: uid("sh"), name: name || "Semua Produk", rows: [], currentPage: 1 };
   }
@@ -2100,12 +2163,24 @@
       "global-preorder": parseFloat(g.gPreorder)  || 0,
       "global-ongkir":   parseFloat(g.gOngkir)    || 0,
       "global-promo":    parseFloat(g.gPromo)     || 0,
+      "global-live":       parseFloat(g.gLive)       || 0,
+      "global-premi":      parseFloat(g.gPremi)      || 0,
+      "global-affiliate":  parseFloat(g.gAffiliate)  || 0,
+      "global-pembayaran": parseFloat(g.gPembayaran) || 0,
+      "global-spl":            parseFloat(g.gSpl)           || 0,
+      "global-ongkir-pembeli": parseFloat(g.gOngkirPembeli) || 0,
       "global-trx":      parseFloat(g.gTrx)       || 0,
       "global-ongkir-rp":parseFloat(g.gOngkirRp)  || 0,
     };
     return map.hasOwnProperty(id) ? map[id] : 0;
   }
   function getDefaultRoas()   { const g = (getActiveStore() || {}).globals; return parseFloat((g||{}).defRoas || "10") || 10; }
+  // Basis omzet yang dipakai platform buat menghitung ROAS.
+  //   "set"   → Shopee: "Penjualan dari Iklan" tidak memotong Voucher/Diskon Penjual,
+  //             jadi dihitung dari harga coret (Set Price).
+  //   "buyer" → TikTok Shop: Gross Revenue = Customer Payment − Sales Taxes
+  //             + Platform Price Discount, yaitu harga yang benar-benar dibayar pembeli.
+  function getRoasBase() { const g = (getActiveStore() || {}).globals; return ((g||{}).roasBase === "buyer") ? "buyer" : "set"; }
   function getDefaultMargin() { const g = (getActiveStore() || {}).globals; return (parseFloat((g||{}).defMargin || "10") || 10) / 100; }
 
   function makeRow() {
@@ -2123,6 +2198,12 @@
       preOrder:   act.gPreorder  !== false ? getVal("global-preorder") / 100 : 0,
       ongkirXtra: act.gOngkir    !== false ? getVal("global-ongkir")   / 100 : 0,
       promoXtra:  act.gPromo     !== false ? getVal("global-promo")    / 100 : 0,
+      live:       act.gLive       !== false ? getVal("global-live")       / 100 : 0,
+      premi:      act.gPremi      !== false ? getVal("global-premi")      / 100 : 0,
+      affiliate:  act.gAffiliate  !== false ? getVal("global-affiliate")  / 100 : 0,
+      pembayaran: act.gPembayaran !== false ? getVal("global-pembayaran") / 100 : 0,
+      spl:           act.gSpl           !== false ? getVal("global-spl") / 100 : 0,
+      ongkirPembeli: act.gOngkirPembeli !== false ? getVal("global-ongkir-pembeli") : 0,
       trxFee: act.gTrx     !== false ? (trxDefault > 0 ? trxDefault : 1250) : 0,
       ongkir: act.gOngkirRp !== false ? (ongkirDefault > 0 ? ongkirDefault : 0) : 0,
       roas: getDefaultRoas(),
@@ -2141,30 +2222,52 @@
     const targetPrice   = r.marginMode === "rp"     ? cogs + (r.marginRp||0)
                         : r.marginMode === "markup" ? cogs * (1 + (r.margin||0))
                         : cogs / (1 - r.margin);
-    const feeTotal      = (r.layanan||0) + (r.preOrder||0) + (r.ongkirXtra||0) + (r.promoXtra||0);
+    // Semua fee di feeTotal berbagi basis yang sama: harga setelah diskon +
+    // voucher penjual, tanpa ongkir. Sesuai aturan Shopee: Biaya Administrasi =
+    // (Harga Asli − Diskon/Voucher ditanggung Penjual) × persen kategori.
+    const feeTotal      = (r.layanan||0) + (r.preOrder||0) + (r.ongkirXtra||0) + (r.promoXtra||0)
+                        + (r.live||0) + (r.premi||0) + (r.affiliate||0) + (r.pembayaran||0);
+    // SPayLater beda sendiri: basisnya termasuk ongkir yang dibayar pembeli.
+    const spl           = r.spl || 0;
+    const ongkirPembeli = r.ongkirPembeli || 0;
     const trxFee        = r.trxFee || 0;
     const ongkir        = r.ongkir || 0;
     const d             = r.discount || 0;
     const v             = r.voucher  || 0;
-    // Reverse from Shopee formula:
-    //   diterima = basis × (1−feeTotal) − trxFee − ongkir = targetPrice
-    //   basis    = omzet × (1−v),  omzet = setPrice × (1−d)
-    //   → setPrice = (targetPrice + trxFee + ongkir) / ((1−d)(1−v)(1−feeTotal))
-    const denom         = (1 - d) * (1 - v) * (1 - feeTotal);
-    const mktplacePrice = denom > 0 ? (targetPrice + trxFee + ongkir) / denom : 0;
     const mktPct        = roasToMktPct(r.roas);
-    const setPrice      = ceilTo(mktplacePrice / (1 - mktPct), rounding);
+    const roasBase      = getRoasBase();
+    // Reverse from Shopee formula. Biaya iklan itu kas keluar dari hasil bersih,
+    // BUKAN komponen harga — kalau di-markup ke harga, markup-nya ikut kena
+    // diskon + voucher + fee sehingga cuma ~64% yang sampai ke seller.
+    //   basis    = omzet × (1−v),  omzet = setPrice × (1−d)
+    //   diterima = basis × (1−feeTotal) − spl × (basis + ongkirPembeli) − trxFee − ongkir
+    //   iklan    = mktPct × (roasBase==="buyer" ? basis : setPrice)
+    //   diterima − iklan = targetPrice
+    // → setPrice = numer / denom, dengan
+    //     numer = targetPrice + trxFee + ongkir + spl × ongkirPembeli
+    //     denom = (1−d)(1−v)(1−feeTotal−spl−mktPct)   bila basis ROAS = harga pembeli
+    //     denom = (1−d)(1−v)(1−feeTotal−spl) − mktPct bila basis ROAS = harga coret
+    const dv            = (1 - d) * (1 - v);
+    const numer         = targetPrice + trxFee + ongkir + spl * ongkirPembeli;
+    const denom         = roasBase === "buyer" ? dv * (1 - feeTotal - spl - mktPct)
+                                               : dv * (1 - feeTotal - spl) - mktPct;
+    const setPrice      = denom > 0 ? ceilTo(numer / denom, rounding) : 0;
+    const mktplacePrice = setPrice;
     // Forward verification using actual (running) discounts/vouchers
     const ad            = r.actDiscount || 0;
     const av            = r.actVoucher  || 0;
     const omzet         = setPrice * (1 - ad);
     const basis         = omzet * (1 - av);              // omzet − voucherToko
     const buyerPrice    = basis;                          // what buyer pays
-    const saleRevenue   = basis * (1 - feeTotal) - trxFee - ongkir;
+    const splFee        = spl * (basis + ongkirPembeli);
+    const grossRevenue  = basis * (1 - feeTotal) - splFee - trxFee - ongkir;  // diterima dari platform
+    const mktCost       = mktPct * (roasBase === "buyer" ? basis : setPrice);
+    const saleRevenue   = grossRevenue - mktCost;         // bersih setelah biaya iklan
     const diff          = saleRevenue - targetPrice;
     const status        = diff > 0.5 ? "BLUE" : diff >= -0.5 ? "GREEN" : "RED";
-    const promoPrice    = mktplacePrice * (1 - d);        // omzet target (internal)
-    return { cogs, targetPrice, promoPrice, mktplacePrice, mktPct, setPrice, saleRevenue, buyerPrice, status };
+    const promoPrice    = setPrice * (1 - d);             // omzet target (internal)
+    return { cogs, targetPrice, promoPrice, mktplacePrice, mktPct, mktCost, grossRevenue,
+             setPrice, saleRevenue, buyerPrice, status };
   }
 
   const _fmt = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 });
@@ -2687,6 +2790,11 @@
       if (active.gPreorder  !== false) r.preOrder   = getVal("global-preorder") / 100;
       if (active.gOngkir    !== false) r.ongkirXtra = getVal("global-ongkir")   / 100;
       if (active.gPromo     !== false) r.promoXtra  = getVal("global-promo")    / 100;
+      EXTRA_FEES.forEach(ef => {
+        if (active[ef.glob] !== false) r[ef.row] = getVal(ef.valId) / 100;
+      });
+      if (active.gSpl           !== false) r.spl           = getVal("global-spl") / 100;
+      if (active.gOngkirPembeli !== false) r.ongkirPembeli = getVal("global-ongkir-pembeli");
       if (active.gTrx       !== false) r.trxFee     = getVal("global-trx");
       if (active.gOngkirRp  !== false) r.ongkir     = getVal("global-ongkir-rp");
     });
@@ -2757,6 +2865,12 @@
     { key:"gPreorder", label:"Pre-Order",  unit:"%",  step:0.1, min:0,   hasMode:false },
     { key:"gOngkir",   label:"Ongkir Xtra",unit:"%", step:0.1, min:0,   hasMode:false },
     { key:"gPromo",    label:"Promo Xtra", unit:"%",  step:0.1, min:0,   hasMode:false },
+    { key:"gLive",       label:"Live Xtra",  unit:"%", step:0.1, min:0, hasMode:false },
+    { key:"gPremi",      label:"Premi",      unit:"%", step:0.1, min:0, hasMode:false },
+    { key:"gAffiliate",  label:"Affiliate",  unit:"%", step:0.5, min:0, hasMode:false },
+    { key:"gPembayaran", label:"Pembayaran", unit:"%", step:0.1, min:0, hasMode:false },
+    { key:"gSpl",        label:"SPayLater",  unit:"%", step:0.5, min:0, hasMode:false },
+    { key:"gOngkirPembeli", label:"Ongkir Pembeli", unit:"Rp", step:1000, min:0, hasMode:false },
     { key:"gTrx",      label:"TRX Fee",   unit:"Rp", step:50,  min:0,   hasMode:false },
     { key:"gOngkirRp", label:"Ongkir",    unit:"Rp", step:500, min:0,   hasMode:false },
   ];
@@ -2765,17 +2879,36 @@
     const v = parseFloat(g[key]) || 0;
     const def = CHIP_DEFS.find(d => d.key === key);
     const modeKey = def && def.modeKey;
-    const isRp = (key === "gTrx" || key === "gOngkirRp") ||
+    const isRp = (key === "gTrx" || key === "gOngkirRp" || key === "gOngkirPembeli") ||
                  (modeKey && (g[modeKey] || "pct") === "rp");
     if (isRp) return "Rp " + new Intl.NumberFormat("id-ID").format(v);
     return v + (key === "defRoas" ? "" : "%");
   }
+
+  function renderRoasBaseToggle() {
+    const cur = getRoasBase();
+    document.querySelectorAll("#roas-base-toggle .rbt-opt").forEach(b => {
+      b.classList.toggle("on", b.dataset.rbase === cur);
+    });
+  }
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest && e.target.closest("#roas-base-toggle .rbt-opt");
+    if (!btn) return;
+    const st = getActiveStore(); if (!st) return;
+    if (!st.globals) st.globals = defaultGlobals();
+    st.globals.roasBase = btn.dataset.rbase === "buyer" ? "buyer" : "set";
+    persist();
+    renderRoasBaseToggle();
+    if (typeof render === "function") render();
+    if (typeof renderCards === "function") renderCards();
+  });
 
   function buildChips() {
     const st = getActiveStore(); if (!st) return;
     const g = st.globals || defaultGlobals();
     if (!g.chipActive) g.chipActive = defaultGlobals().chipActive;
     if (!g.defMarginMode) g.defMarginMode = "pct";
+    renderRoasBaseToggle();
     const container = document.getElementById("param-chips-container");
     if (!container) return;
     // Remove popups previously moved to body
@@ -3493,6 +3626,8 @@
       discount: r.discount||0, voucher: r.voucher||0,
       layanan: r.layanan||0, preOrder: r.preOrder||0,
       ongkirXtra: r.ongkirXtra||0, promoXtra: r.promoXtra||0,
+      live: r.live||0, premi: r.premi||0, affiliate: r.affiliate||0, pembayaran: r.pembayaran||0,
+      spl: r.spl||0, ongkirPembeli: r.ongkirPembeli||0,
       trxFee: r.trxFee!=null ? r.trxFee : 1250,
       ongkir: r.ongkir!=null ? r.ongkir : 0,
       roas: r.roas||10,
@@ -3532,16 +3667,31 @@
       cards: (function(){
         const g2 = Object.assign(defaultGlobals(), st.globals||{});
         const fv = function(c,k,gk){ return c[k]!=null ? +c[k] : parseFloat(g2[gk])||0; };
+        const blank = function(){
+          return { name:"", variant:"", sku:"", hargaJual:0, hpp:0,
+            diskon:parseFloat(g2.gDiscount)||0, layanan:parseFloat(g2.gLayanan)||0,
+            ongkir:parseFloat(g2.gOngkir)||0, promo:parseFloat(g2.gPromo)||0,
+            trx:parseFloat(g2.gTrx)||0, voucherToko:0, voucherMode:'rp',
+            roas:parseFloat(g2.defRoas)||0, _open:false,
+            preorder:parseFloat(g2.gPreorder)||0,
+            live:parseFloat(g2.gLive)||0, premi:parseFloat(g2.gPremi)||0,
+            affiliate:parseFloat(g2.gAffiliate)||0, pembayaran:parseFloat(g2.gPembayaran)||0,
+            spl:parseFloat(g2.gSpl)||0, ongkirPembeli:parseFloat(g2.gOngkirPembeli)||0 };
+        };
         const cs = (st.cards||[]).map(c => ({
           name:c.name||"", variant:c.variant||c.varian||"", sku:c.sku||"",
           hargaJual:+c.hargaJual||0, hpp:+c.hpp||+c.purchase||0,
           diskon:fv(c,'diskon','gDiscount'), layanan:fv(c,'layanan','gLayanan'),
           ongkir:fv(c,'ongkir','gOngkir'), promo:fv(c,'promo','gPromo'),
-          trx:fv(c,'trx','gTrx')
+          trx:fv(c,'trx','gTrx'),
+          voucherToko:+c.voucherToko||0, voucherMode:c.voucherMode==='pct'?'pct':'rp',
+          roas:fv(c,'roas','defRoas'), _open:!!c._open,
+          preorder:fv(c,'preorder','gPreorder'),
+          live:fv(c,'live','gLive'), premi:fv(c,'premi','gPremi'),
+          affiliate:fv(c,'affiliate','gAffiliate'), pembayaran:fv(c,'pembayaran','gPembayaran'),
+          spl:fv(c,'spl','gSpl'), ongkirPembeli:fv(c,'ongkirPembeli','gOngkirPembeli')
         }));
-        while (cs.length < 4) cs.push({ name:"", variant:"", sku:"", hargaJual:0, hpp:0,
-          diskon:parseFloat(g2.gDiscount)||0, layanan:parseFloat(g2.gLayanan)||0,
-          ongkir:parseFloat(g2.gOngkir)||0, promo:parseFloat(g2.gPromo)||0, trx:parseFloat(g2.gTrx)||0 });
+        while (cs.length < 4) cs.push(blank());
         return cs.slice(0, 4);
       })(),
       sheets: (st.sheets && st.sheets.length ? st.sheets : [makeSheet("Semua Produk")]).map(sh => ({
@@ -3857,6 +4007,11 @@
     if (Math.abs((r.preOrder   || 0) - gP) > tol) return true;
     if (Math.abs((r.ongkirXtra || 0) - gO) > tol) return true;
     if (Math.abs((r.promoXtra  || 0) - gPr)> tol) return true;
+    for (const ef of EXTRA_FEES) {
+      if (Math.abs((r[ef.row] || 0) - (parseFloat(g[ef.glob]) || 0) / 100) > tol) return true;
+    }
+    if (Math.abs((r.spl           || 0) - (parseFloat(g.gSpl) || 0) / 100) > tol) return true;
+    if (Math.abs((r.ongkirPembeli || 0) - (parseFloat(g.gOngkirPembeli) || 0)) > tol) return true;
     if (Math.abs((r.trxFee     || 0) - gT) > tol) return true;
     if (Math.abs((r.ongkir     || 0) - gOR)> tol) return true;
     if (Math.abs((r.roas       || 10)- gR) > tol) return true;
@@ -4018,6 +4173,12 @@
     document.getElementById('lv-f-po').value     = +((r.preOrder   || 0) * 100).toFixed(2);
     document.getElementById('lv-f-ox').value     = +((r.ongkirXtra || 0) * 100).toFixed(2);
     document.getElementById('lv-f-px').value     = +((r.promoXtra  || 0) * 100).toFixed(2);
+    document.getElementById('lv-f-live').value   = +((r.live       || 0) * 100).toFixed(2);
+    document.getElementById('lv-f-premi').value  = +((r.premi      || 0) * 100).toFixed(2);
+    document.getElementById('lv-f-aff').value    = +((r.affiliate  || 0) * 100).toFixed(2);
+    document.getElementById('lv-f-bayar').value  = +((r.pembayaran || 0) * 100).toFixed(2);
+    document.getElementById('lv-f-spl').value    = +((r.spl        || 0) * 100).toFixed(2);
+    document.getElementById('lv-f-okp').value    = r.ongkirPembeli || 0;
     document.getElementById('lv-f-trx').value    = r.trxFee || 0;
     document.getElementById('lv-f-ongkir').value = r.ongkir  || 0;
     document.getElementById('lv-f-roas').value   = r.roas != null ? r.roas : 10;
@@ -4027,7 +4188,7 @@
     const st = getActiveStore();
     const g  = st ? st.globals : defaultGlobals();
     const act = g.chipActive || defaultGlobals().chipActive;
-    const tagMap = { defRoas:'defRoas', defMargin:'defMargin', gDiscount:'gDiscount', gVoucher:'gVoucher', gLayanan:'gLayanan', gPreorder:'gPreorder', gOngkir:'gOngkir', gPromo:'gPromo', gTrx:'gTrx', gOngkirRp:'gOngkirRp' };
+    const tagMap = { defRoas:'defRoas', defMargin:'defMargin', gDiscount:'gDiscount', gVoucher:'gVoucher', gLayanan:'gLayanan', gPreorder:'gPreorder', gOngkir:'gOngkir', gPromo:'gPromo', gLive:'gLive', gPremi:'gPremi', gAffiliate:'gAffiliate', gPembayaran:'gPembayaran', gSpl:'gSpl', gOngkirPembeli:'gOngkirPembeli', gTrx:'gTrx', gOngkirRp:'gOngkirRp' };
     Object.entries(tagMap).forEach(([panelKey, gKey]) => {
       const el = document.getElementById('lv-gt-' + panelKey);
       if (!el) return;
@@ -4113,7 +4274,7 @@
     const c  = compute(r);
     const aD = (parseFloat(document.getElementById('lv-f-adisc').value) || 0) / 100;
     const aV = (parseFloat(document.getElementById('lv-f-avchr').value) || 0) / 100;
-    const hbeli = c.setPrice * (1 - aD - aV);
+    const hbeli = c.setPrice * (1 - aD) * (1 - aV);
     const srev  = c.saleRevenue;
     const mSim  = srev > 0 ? (srev - c.cogs) / srev * 100 : -99;
     const sCls  = c.status === 'BLUE' ? 's-untung' : c.status === 'GREEN' ? 's-impas' : 's-rugi';
@@ -4159,7 +4320,7 @@
     }
     const aD = (parseFloat(aDEl ? aDEl.value : 0) || 0) / 100;
     const aV = (parseFloat(aVEl ? aVEl.value : 0) || 0) / 100;
-    const hbeli  = c.setPrice * (1 - aD - aV);
+    const hbeli  = c.setPrice * (1 - aD) * (1 - aV);
     const srev   = c.saleRevenue;
     const mSim   = srev > 0 ? (srev - c.cogs) / srev * 100 : -99;
     const sCls   = c.status === 'BLUE' ? 's-untung' : c.status === 'GREEN' ? 's-impas' : 's-rugi';
@@ -4204,6 +4365,12 @@
     r.preOrder    = fv('lv-f-po')   / 100;
     r.ongkirXtra  = fv('lv-f-ox')   / 100;
     r.promoXtra   = fv('lv-f-px')   / 100;
+    r.live        = fv('lv-f-live')  / 100;
+    r.premi       = fv('lv-f-premi') / 100;
+    r.affiliate   = fv('lv-f-aff')   / 100;
+    r.pembayaran  = fv('lv-f-bayar') / 100;
+    r.spl           = fv('lv-f-spl') / 100;
+    r.ongkirPembeli = fv('lv-f-okp');
     r.trxFee      = fv('lv-f-trx');
     r.ongkir      = fv('lv-f-ongkir');
     r.roas        = document.getElementById('lv-f-roas').value.trim() === '' ? 10 : fv('lv-f-roas');
@@ -4253,6 +4420,12 @@
     r.preOrder   = fv('lv-f-po')   / 100;
     r.ongkirXtra = fv('lv-f-ox')   / 100;
     r.promoXtra  = fv('lv-f-px')   / 100;
+    r.live       = fv('lv-f-live')  / 100;
+    r.premi      = fv('lv-f-premi') / 100;
+    r.affiliate  = fv('lv-f-aff')   / 100;
+    r.pembayaran = fv('lv-f-bayar') / 100;
+    r.spl           = fv('lv-f-spl') / 100;
+    r.ongkirPembeli = fv('lv-f-okp');
     r.trxFee     = fv('lv-f-trx');
     r.ongkir     = fv('lv-f-ongkir');
     r.roas       = document.getElementById('lv-f-roas').value.trim() === '' ? 10 : fv('lv-f-roas');
@@ -4296,6 +4469,9 @@
     r.preOrder   = (parseFloat(g.gPreorder)  || 0) / 100;
     r.ongkirXtra = (parseFloat(g.gOngkir)    || 0) / 100;
     r.promoXtra  = (parseFloat(g.gPromo)     || 0) / 100;
+    EXTRA_FEES.forEach(ef => { r[ef.row] = (parseFloat(g[ef.glob]) || 0) / 100; });
+    r.spl           = (parseFloat(g.gSpl) || 0) / 100;
+    r.ongkirPembeli = parseFloat(g.gOngkirPembeli) || 0;
     r.trxFee     = parseFloat(g.gTrx)     || 1250;
     r.ongkir     = parseFloat(g.gOngkirRp) || 0;
     lvOpenPanel(_lvActiveIdx);
@@ -4420,13 +4596,39 @@
   function _numOf(v){ return parseInt(String(v).replace(/[^\d]/g,''),10) || 0; }
   function _feeFmt(n){ return (Number(n)||0).toLocaleString('id-ID',{maximumFractionDigits:2}) + '%'; }
   function _marginFmt(r){ return (r*100).toLocaleString('id-ID',{maximumFractionDigits:1}) + '%'; }
+  function _roasBaseShort(){ return getRoasBase() === 'buyer' ? 'harga bayar' : 'harga coret'; }
+  // Biaya tambahan di kartu: baris cuma muncul kalau tarifnya bukan nol,
+  // supaya kartu tetap ringkas buat yang tidak pakai.
+  function _cardExtraDefs(c){
+    return [
+      { key:'preorder',   label:'Pre-Order',   pct:c.preorder,   rp:c.preorderRp   },
+      { key:'live',       label:'Live Xtra',   pct:c.live,       rp:c.liveRp       },
+      { key:'premi',      label:'Premi',       pct:c.premi,      rp:c.premiRp      },
+      { key:'affiliate',  label:'Affiliate',   pct:c.affiliate,  rp:c.affiliateRp  },
+      { key:'pembayaran', label:'Pembayaran',  pct:c.pembayaran, rp:c.pembayaranRp },
+      { key:'spl',        label:'SPayLater',   pct:c.spl,        rp:c.splRp },
+    ];
+  }
+  function _cardExtraCount(c){ return _cardExtraDefs(c).filter(d => d.pct > 0).length; }
+  function _extraRowsHTML(c){
+    return _cardExtraDefs(c).map(d =>
+      '<div class="pc-row" data-out-row="x-'+d.key+'" style="'+(d.pct>0?'':'display:none')+'">'+
+        '<span class="pl" data-out="x-'+d.key+'-lbl">'+d.label+' '+_feeFmt(d.pct)+(d.note?' <span class="pl-note">'+d.note+'</span>':'')+'</span>'+
+        '<span class="pv neg" data-out="x-'+d.key+'-rp">– '+rp(d.rp)+'</span>'+
+      '</div>').join('');
+  }
   function _blankCard(){
     const st = getActiveStore();
     const g = st ? st.globals : defaultGlobals();
     return { name:"", variant:"", sku:"", hargaJual:0, hpp:0,
       diskon: parseFloat(g.gDiscount)||0, layanan: parseFloat(g.gLayanan)||0,
       ongkir: parseFloat(g.gOngkir)||0, promo: parseFloat(g.gPromo)||0,
-      trx: parseFloat(g.gTrx)||0 };
+      trx: parseFloat(g.gTrx)||0, voucherToko:0, voucherMode:'rp',
+      roas: parseFloat(g.defRoas)||0,
+      preorder: parseFloat(g.gPreorder)||0, live: parseFloat(g.gLive)||0,
+      premi: parseFloat(g.gPremi)||0, affiliate: parseFloat(g.gAffiliate)||0,
+      pembayaran: parseFloat(g.gPembayaran)||0,
+      spl: parseFloat(g.gSpl)||0, ongkirPembeli: parseFloat(g.gOngkirPembeli)||0 };
   }
   function ensureCards(st){
     if(!Array.isArray(st.cards)) st.cards = [];
@@ -4454,14 +4656,38 @@
     const layananRp    = R(basis * layanan / 100);
     const ongkirRp     = R(basis * ongkir  / 100);
     const promoRp      = R(basis * promo   / 100);
+    // Biaya persen tambahan — basis sama dengan Layanan.
+    const preorder     = fv('preorder','gPreorder');
+    const live         = fv('live','gLive');
+    const premi        = fv('premi','gPremi');
+    const affiliate    = fv('affiliate','gAffiliate');
+    const pembayaran   = fv('pembayaran','gPembayaran');
+    const preorderRp   = R(basis * preorder   / 100);
+    const liveRp       = R(basis * live       / 100);
+    const premiRp      = R(basis * premi      / 100);
+    const affiliateRp  = R(basis * affiliate  / 100);
+    const pembayaranRp = R(basis * pembayaran / 100);
+    // SPayLater — basisnya termasuk ongkir yang dibayar pembeli.
+    const spl           = fv('spl','gSpl');
+    const ongkirPembeli = fv('ongkirPembeli','gOngkirPembeli');
+    const splRp         = R((basis + ongkirPembeli) * spl / 100);
     const trx          = R(trxV);
-    const admin        = layananRp + ongkirRp + promoRp + trx;
+    const extraRp      = preorderRp + liveRp + premiRp + affiliateRp + pembayaranRp + splRp;
+    const admin        = layananRp + ongkirRp + promoRp + extraRp + trx;
     const diterima     = omzet - voucherTokoRp - admin;
+    const roas         = card.roas != null ? +card.roas : (parseFloat(g.defRoas) || 0);
+    const mktPct       = roasToMktPct(roas);
+    const iklanRp      = R(mktPct * (getRoasBase() === 'buyer' ? basis : hj));
+    const bersih       = diterima - iklanRp;              // sepadan dgn HJT di List
     const hpp          = +card.hpp || 0;
-    const profit       = diterima - hpp;
-    const margin       = hj > 0 ? profit / hj : 0;
+    const profit       = bersih - hpp;
+    const marginNet    = bersih > 0 ? profit / bersih : 0; // basis List: profit ÷ uang bersih
+    const margin       = hj > 0 ? profit / hj : 0;         // basis lama: profit ÷ harga jual
     const status       = profit > 0.5 ? 'BLUE' : profit >= -0.5 ? 'GREEN' : 'RED';
-    return { hj, diskon, layanan, ongkir, promo, diskonRp, omzet, voucherTokoRp, layananRp, ongkirRp, promoRp, trx, admin, diterima, hpp, profit, margin, status };
+    return { hj, diskon, layanan, ongkir, promo, diskonRp, omzet, voucherTokoRp, layananRp, ongkirRp, promoRp,
+             preorder, live, premi, affiliate, pembayaran, spl, ongkirPembeli,
+             preorderRp, liveRp, premiRp, affiliateRp, pembayaranRp, splRp,
+             trx, admin, diterima, roas, mktPct, iklanRp, bersih, hpp, profit, margin, marginNet, status };
   }
 
   function cardHTML(card, i){
@@ -4489,6 +4715,27 @@
           '<div class="pcard-fees-row">'+
             '<div class="pcf"><label>Trx (Rp)</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="trx" value="'+c.trx+'" step="50" min="0" /></div></div>'+
             '<div class="pcf"><label>Vchr Toko <button class="vchr-mode-btn" data-ci="'+i+'" title="Ganti mode Rp / %">'+(card.voucherMode==='pct'?'%':'Rp')+'</button></label><div class="pcf-iw"><input class="pcf-inp '+(card.voucherMode==='pct'?'':'pcf-rp')+'" type="number" data-ci="'+i+'" data-ccf="voucherToko" value="'+(+card.voucherToko||0)+'" step="'+(card.voucherMode==='pct'?'0.5':'1000')+'" min="0" />'+(card.voucherMode==='pct'?'<span class="psfx">%</span>':'')+' </div></div>'+
+            '<div class="pcf"><label>ROAS</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="roas" value="'+c.roas+'" step="0.5" min="0" /></div></div>'+
+          '</div>'+
+          '<button class="pcf-more" data-cmore="'+i+'" aria-expanded="'+(card._open?'true':'false')+'">'+
+            '<span class="pcf-more-cin">'+(card._open?'▾':'▸')+'</span> Biaya lain'+
+            '<span class="pcf-more-badge" data-out="extraCount" style="'+(_cardExtraCount(c)?'':'display:none')+'">'+_cardExtraCount(c)+'</span>'+
+          '</button>'+
+          '<div class="pcard-fees-extra" data-cextra="'+i+'" style="'+(card._open?'':'display:none')+'">'+
+            '<div class="pcard-fees-row">'+
+              '<div class="pcf"><label>Pre-Order</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="preorder" value="'+c.preorder+'" step="0.1" min="0" /><span class="psfx">%</span></div></div>'+
+              '<div class="pcf"><label>Live Xtra</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="live" value="'+c.live+'" step="0.1" min="0" /><span class="psfx">%</span></div></div>'+
+              '<div class="pcf"><label>Premi</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="premi" value="'+c.premi+'" step="0.1" min="0" /><span class="psfx">%</span></div></div>'+
+            '</div>'+
+            '<div class="pcard-fees-row">'+
+              '<div class="pcf"><label>Affiliate</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="affiliate" value="'+c.affiliate+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
+              '<div class="pcf"><label>Pembayaran</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="pembayaran" value="'+c.pembayaran+'" step="0.1" min="0" /><span class="psfx">%</span></div></div>'+
+            '</div>'+
+            '<div class="pcf-note">SPayLater dihitung dari basis + ongkir pembeli</div>'+
+            '<div class="pcard-fees-row">'+
+              '<div class="pcf"><label>SPayLater</label><div class="pcf-iw"><input class="pcf-inp" type="number" data-ci="'+i+'" data-ccf="spl" value="'+c.spl+'" step="0.5" min="0" /><span class="psfx">%</span></div></div>'+
+              '<div class="pcf"><label>Ongkir Pembeli</label><div class="pcf-iw"><input class="pcf-inp pcf-rp" type="number" data-ci="'+i+'" data-ccf="ongkirPembeli" value="'+c.ongkirPembeli+'" step="1000" min="0" /></div></div>'+
+            '</div>'+
           '</div>'+
         '</div>'+
       '</div>'+
@@ -4505,14 +4752,19 @@
         '<div class="pc-row"><span class="pl" data-out="layananLbl">Layanan '+_feeFmt(c.layanan)+'</span><span class="pv neg" data-out="layananRp">– '+rp(c.layananRp)+'</span></div>'+
         '<div class="pc-row"><span class="pl" data-out="ongkirLbl">Ongkir Xtra '+_feeFmt(c.ongkir)+'</span><span class="pv neg" data-out="ongkirRp">– '+rp(c.ongkirRp)+'</span></div>'+
         '<div class="pc-row"><span class="pl" data-out="promoLbl">Promo Xtra '+_feeFmt(c.promo)+'</span><span class="pv neg" data-out="promoRp">– '+rp(c.promoRp)+'</span></div>'+
-        '<div class="pc-row"><span class="pl">Biaya Transaksi</span><span class="pv neg" data-out="trx">– '+rp(c.trx)+'</span></div>'+
+        _extraRowsHTML(c)+
+        '<div class="pc-row"><span class="pl">Proses Pesanan</span><span class="pv neg" data-out="trx">– '+rp(c.trx)+'</span></div>'+
         '<div class="pc-row diterima"><span class="pl">= Diterima Seller</span><span class="pv" data-out="diterima">'+rp(c.diterima)+'</span></div>'+
+        '<div class="pc-sec">Iklan</div>'+
+        '<div class="pc-row"><span class="pl" data-out="iklanLbl">Iklan '+_feeFmt(c.mktPct*100)+' ('+_roasBaseShort()+')</span><span class="pv neg" data-out="iklanRp">– '+rp(c.iklanRp)+'</span></div>'+
+        '<div class="pc-row total"><span class="pl">= Bersih stlh Iklan</span><span class="pv" data-out="bersih">'+rp(c.bersih)+'</span></div>'+
         '<div class="pc-sec">Modal</div>'+
         '<div class="pc-row"><span class="pl">HPP / Modal</span><input class="pc-money pc-money-inp" data-ci="'+i+'" data-cf="hpp" data-raw="'+c.hpp+'" value="'+(c.hpp?c.hpp.toLocaleString('id-ID'):'')+'" placeholder="0" inputmode="numeric" /></div>'+
       '</div>'+
       '<div class="pcard-foot">'+
-        '<div><div class="pf-lbl">Profit</div><div class="pf-val" data-out="profit">'+sign+rp(c.profit)+'</div></div>'+
-        '<div class="pf-tag" data-out="tag">'+tag+' · '+_marginFmt(c.margin)+'</div>'+
+        '<div><div class="pf-lbl">Profit stlh Iklan</div><div class="pf-val" data-out="profit">'+sign+rp(c.profit)+'</div>'+
+          '<div class="pf-sub" data-out="marginSub">'+_marginFmt(c.marginNet)+' thd bersih · '+_marginFmt(c.margin)+' thd harga jual</div></div>'+
+        '<div class="pf-tag" data-out="tag">'+tag+'</div>'+
       '</div>'+
       '<button class="pcard-add" data-cadd="'+i+'">＋ Tambahkan Produk</button>'+
     '</div>';
@@ -4542,10 +4794,22 @@
     if(vchrRow) vchrRow.style.display = c.voucherTokoRp ? '' : 'none';
     set('layananRp','– '+rp(c.layananRp)); set('ongkirRp','– '+rp(c.ongkirRp));
     set('promoRp','– '+rp(c.promoRp)); set('trx','– '+rp(c.trx));
+    _cardExtraDefs(c).forEach(d => {
+      const row = el.querySelector('[data-out-row="x-'+d.key+'"]');
+      if (row) row.style.display = d.pct > 0 ? '' : 'none';
+      set('x-'+d.key+'-lbl', d.label+' '+_feeFmt(d.pct)+(d.note?' '+d.note:''));
+      set('x-'+d.key+'-rp', '– '+rp(d.rp));
+    });
+    const badge = el.querySelector('[data-out="extraCount"]');
+    if (badge) { const n = _cardExtraCount(c); badge.textContent = n; badge.style.display = n ? '' : 'none'; }
     set('diterima',rp(c.diterima));
+    set('iklanLbl','Iklan '+_feeFmt(c.mktPct*100)+' ('+_roasBaseShort()+')');
+    set('iklanRp','– '+rp(c.iklanRp));
+    set('bersih',rp(c.bersih));
     set('profit',(c.profit>0?'+':'')+rp(c.profit));
+    set('marginSub', _marginFmt(c.marginNet)+' thd bersih · '+_marginFmt(c.margin)+' thd harga jual');
     const tag = c.status==='BLUE'?'Untung':c.status==='GREEN'?'Impas':'Rugi';
-    set('tag', tag+' · '+_marginFmt(c.margin));
+    set('tag', tag);
   }
 
   function toast(msg){
@@ -4561,8 +4825,9 @@
   }
 
   // Card → List (searah). Buat baris List forward: HPP = HPP card,
-  // Harga Jual Target (HJT) = Diterima Seller card (lewat marginMode 'rp'),
-  // sisanya (Set Price, dll) dihitung rumus forward List + biaya dari globals.
+  // Harga Jual Target (HJT) = Bersih setelah Iklan dari card (lewat marginMode 'rp'),
+  // karena HJT di List juga bermakna uang bersih setelah fee DAN setelah iklan.
+  // Sisanya (Set Price, dll) dihitung rumus forward List + biaya dari globals.
   function addCardToList(i){
     const st = getActiveStore(); const sh = getActiveSheet(); if(!st || !sh) return;
     ensureCards(st);
@@ -4576,7 +4841,8 @@
     row.sku = card.sku || '';
     row.purchase = +card.hpp || 0;
     row.marginMode = 'rp';
-    row.marginRp = Math.round(c.diterima - (+card.hpp || 0));  // → HJT = Diterima Seller
+    row.marginRp = Math.round(c.bersih - (+card.hpp || 0));  // → HJT = Bersih stlh Iklan
+    if (card.roas != null) row.roas = +card.roas;
     if(typeof pushHistory === 'function') pushHistory();
     sh.rows.push(row);
     sh.currentPage = Math.min(MAX_PAGES, Math.max(1, Math.ceil(sh.rows.length / PAGE_SIZE)));
@@ -4624,6 +4890,18 @@
       const card=st.cards[i]; if(!card) return;
       card.voucherMode=(card.voucherMode==='pct')?'rp':'pct'; card.voucherToko=0;
       persist(); renderCards(); return;
+    }
+    const more=e.target.closest('[data-cmore]');
+    if(more){
+      const i=+more.dataset.cmore; const st=getActiveStore(); if(!st) return; ensureCards(st);
+      const card=st.cards[i]; if(!card) return;
+      card._open=!card._open;
+      const box=document.querySelector('[data-cextra="'+i+'"]');
+      if(box) box.style.display=card._open?'':'none';
+      const cin=more.querySelector('.pcf-more-cin');
+      if(cin) cin.textContent=card._open?'▾':'▸';
+      more.setAttribute('aria-expanded', card._open?'true':'false');
+      persist(); return;
     }
     const add=e.target.closest('[data-cadd]');
     if(add){ addCardToList(+add.dataset.cadd); return; }
